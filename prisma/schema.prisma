@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  products      Product[]
+  orders        Order[]
+  socialPosts   SocialPost[]
+  socialMetrics SocialMetrics[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Float
+  description String
+  supplier    String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  products        Product[]
+  customerDetails Json
+  status          String    @default("pending")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model SocialPost {
+  id        String   @id @default(uuid())
+  content   String
+  platforms String[]
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SocialMetrics {
+  id         String   @id @default(uuid())
+  platform   String
+  followers  Int
+  engagement Float
+  comments   Int
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
